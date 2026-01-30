@@ -83,7 +83,7 @@ const statusTip = computed(() => {
   const map: Record<FeedbackStatus, string> = {
     SUCCESS: '提交成功，感谢反馈',
     FAILED: '提交失败，请稍后再试',
-    TOO_FREQUENT: '提交过于频繁，请稍后再试',
+    TOO_FREQUENT: '提交过于频繁，请稍后(1分钟)再试',
     CHANNEL_DISABLED: '渠道未启用',
     CHANNEL_NOT_CONFIGURED: '渠道未配置',
     ENDPOINT_NOT_CONFIGURED: '地址未配置',
