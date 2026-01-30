@@ -21,14 +21,14 @@ public class ConfigController {
     }
 
     @PostMapping
-    public ResponseEntity<FeedbackProperties> update(@RequestBody FeedbackProperties updated) {
+    public ResponseEntity<Boolean> update(@RequestBody FeedbackProperties updated) {
         // For simplicity first version: overwrite in-memory properties
         feedbackProperties.setEnabled(updated.isEnabled());
         feedbackProperties.getDingTalk().setWebhook(updated.getDingTalk().getWebhook());
         feedbackProperties.getDingTalk().setSecret(updated.getDingTalk().getSecret());
         feedbackProperties.getRateLimit().setEnabled(updated.getRateLimit().isEnabled());
         feedbackProperties.getRateLimit().setLimitPerMinute(updated.getRateLimit().getLimitPerMinute());
-        return ResponseEntity.ok(feedbackProperties);
+        return ResponseEntity.ok(true);
     }
 }
 

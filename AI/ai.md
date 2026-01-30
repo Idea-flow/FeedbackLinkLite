@@ -44,4 +44,15 @@ pnpm run dev
 后端的接口地址支持可以配置,开发环境支持配置接口地址,线上是现有的接口地址,因为线上会打包成静态页面
 
 
+1. secret 可以为空
+2. 使用UI/UX Pro Max - Design Intelligence skills 重构这个页面的ui效果
 
+
+/Users/wangpenglong/projects/java/ServiceLinkLite/nuxt-frontend/app/                                                    
+pages/config.vue   使用UI/UX Pro Max 的技能重构这个配置页面的ui
+
+
+
+# 钉钉
+
+https://oapi.dingtalk.com/robot/send?access_token=aee3a48746bb9385eb188f489a09f67c9638079e5b74802f32dcabc487d928a5
