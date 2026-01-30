@@ -52,7 +52,7 @@ jobs:
           # 从多行标签中提取第一个标签作为镜像标签
           TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
           echo "Using tag: $TAG"
-          ./mvnw -Pnative spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG
+          ./mvnw -Pnative spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=$TAG
 
       - name: Log in to GitHub Container Registry # 登录到 GitHub Container Registry
         uses: docker/login-action@v3
@@ -65,17 +65,16 @@ jobs:
         run: |
           # 从多行标签中提取第一个标签作为镜像标签
           TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG
+          docker push $TAG
 
       - name: Print deployed container information # 打印部署的容器信息
         run: |
           # 从多行标签中提取第一个标签作为镜像标签
           TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
           echo "✅ Docker 镜像构建并推送成功！"
-          echo "📦 镜像名称: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
-          echo "🏷️  镜像标签: $TAG"
+          echo "📦 镜像名称: $TAG"
           echo ""
-          echo "🚀 拉取镜像: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG"
-          echo "🚀 运行镜像: docker run -p 4567:4567 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG"
+          echo "🚀 拉取镜像: docker pull $TAG"
+          echo "🚀 运行镜像: docker run -p 4567:4567 $TAG"
           echo ""
           echo "🌐 部署完成，镜像已推送到 GitHub Container Registry (GHCR)"
