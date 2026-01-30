@@ -73,7 +73,7 @@ public class RateLimiterService {
     }
 
     // 定时清理任务，执行频率由配置的时间窗口决定（单位：毫秒）。支持动态配置，例如窗口为60分钟，则每60分钟清理一次(只有重启的时候生效)
-    @Scheduled(fixedDelayString = "#{feedbackProperties.rateLimit.windowMinutes * 60 * 1000}")
+    @Scheduled(fixedDelayString = "#{${feedback.rate-limit.window-minutes:60} * 60 * 1000}")
     public void cleanup() {
         // 获取限流配置
         FeedbackProperties.RateLimit cfg = feedbackProperties.getRateLimit();
