@@ -21,7 +21,7 @@ public class FeedbackProperties {
     @Data
     public static class RateLimit {
         private boolean enabled = true;
-        private int limitPerMinute = 10;
+        private int limitPerMinute = 1;
     }
 }
 

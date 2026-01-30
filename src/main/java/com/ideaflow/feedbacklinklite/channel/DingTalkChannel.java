@@ -36,28 +36,30 @@ public class DingTalkChannel implements MessageChannel {
         try {
             String url = appendSignatureIfNeeded(webhook, feedbackProperties.getDingTalk().getSecret());
             ObjectNode payload = objectMapper.createObjectNode();
-            payload.put("msgtype", "text");
-            ObjectNode text = payload.putObject("text");
-            String content = "用户反馈:\n" + context.getMessage();
-            if (StringUtils.hasText(context.getContact())) {
-                content += "\n联系方式: " + maskContact(context.getContact());
-            }
-            if (StringUtils.hasText(context.getPageUrl())) {
-                content += "\n页面: " + context.getPageUrl();
-            }
-//            if (StringUtils.hasText(context.getUserAgent())) {
-//                content += "\nUA: " + context.getUserAgent();
-//            }
-            text.put("content", content);
+            payload.put("msgtype", "markdown");
+            ObjectNode markdown = payload.putObject("markdown");
+            markdown.put("title", "收到新的用户反馈");
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> entity = new HttpEntity<>(payload.toString(), headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                return ChannelResult.ok();
+            StringBuilder content = new StringBuilder();
+            content.append("### 🔔 收到新的用户反馈\n\n");
+            if (StringUtils.hasText(context.getPageUrl())) {
+                content.append("- **页面**: ").append(escapeMarkdownContent(context.getPageUrl())).append("\n");
             }
-            log.warn("DingTalk send failed status={} body={}", response.getStatusCode(), response.getBody());
+            if (StringUtils.hasText(context.getContact())) {
+                content.append("- **联系**: ").append(maskContact(context.getContact())).append("\n");
+            }
+            content.append("\n**内容**:\n> ").append(escapeMarkdownContent(context.getMessage()));
+
+            markdown.put("text", content.toString());
+
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> entity = new HttpEntity<>(payload.toString(), headers);
+//            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+//            if (response.getStatusCode().is2xxSuccessful()) {
+//                return ChannelResult.ok();
+////            }
+//            log.warn("DingTalk send failed status={} body={}", response.getStatusCode(), response.getBody());
             return ChannelResult.fail("DingTalk send failed");
         } catch (Exception ex) {
             log.error("DingTalk send exception", ex);
@@ -76,6 +78,38 @@ public class DingTalkChannel implements MessageChannel {
         }
         int keep = Math.min(3, contact.length());
         return contact.substring(0, keep) + "***";
+    }
+
+    // 新增方法：转义 Markdown 特殊字符，防止格式渲染问题
+    private String escapeMarkdownContent(String content) {
+        if (content == null) {
+            return "";
+        }
+        
+        // 处理多个连续空格，替换为单个空格或保留适当的空格
+        content = content.replaceAll(" {2,}", " ");
+        
+        // 转义 Markdown 特殊字符
+        content = content.replace("\\", "\\\\"); // 反斜杠
+        content = content.replace("`", "\\`"); // 反引号
+        content = content.replace("*", "\\*"); // 星号
+        content = content.replace("_", "\\_"); // 下划线
+        content = content.replace("{", "\\{"); // 花括号
+        content = content.replace("}", "\\}"); // 花括号
+        content = content.replace("[", "\\["); // 方括号
+        content = content.replace("]", "\\]"); // 方括号
+        content = content.replace("(", "\\("); // 圆括号
+        content = content.replace(")", "\\)"); // 圆括号
+        content = content.replace("#", "\\#"); // 井号
+        content = content.replace("+", "\\+"); // 加号
+        content = content.replace("-", "\\-"); // 减号
+        content = content.replace(".", "\\."); // 点号
+        content = content.replace("!", "\\!"); // 感叹号
+        content = content.replace("~", "\\~"); // 波浪号
+        content = content.replace("|", "\\|"); // 竖线
+        content = content.replace(">", "\\>"); // 大于号
+        
+        return content;
     }
 
     private String appendSignatureIfNeeded(String webhook, String secret) {
@@ -97,4 +131,3 @@ public class DingTalkChannel implements MessageChannel {
         }
     }
 }
-

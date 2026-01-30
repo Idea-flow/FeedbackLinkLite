@@ -21,4 +21,4 @@ feedback:
     secret: ""
   rate-limit:
     enabled: true
-    limit-per-minute: 10
+    limit-per-minute: 1
