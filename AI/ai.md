@@ -51,7 +51,9 @@ pnpm run dev
 /Users/wangpenglong/projects/java/ServiceLinkLite/nuxt-frontend/app/                                                    
 pages/config.vue   使用UI/UX Pro Max 的技能重构这个配置页面的ui
 
+美化这个组件的ui以及交互效果
 
+需要一个比较特色的ui配色,不要这种蓝紫
 
 # 钉钉
 

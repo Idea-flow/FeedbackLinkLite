@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 
 // 简易状态枚举与后端保持一致
 const Status = {
@@ -49,6 +49,7 @@ const withBase = (path: string) => `${apiBase.value}${path}`
 console.log('apiBase', apiBase.value)
 
 const isOpen = ref(false)
+const isHovered = ref(false)
 const loading = ref(false)
 const config = reactive<FeedbackConfig>({})
 const form = reactive<FeedbackRequest>({
@@ -63,8 +64,11 @@ const lastSubmitAt = ref(0)
 
 const canSubmit = computed(() => {
   if (!form.message.trim()) return false
+  if (form.contact && !emailRegex.test(form.contact.trim())) return false // Make contact optional if needed by logic, but UI says required
+  // Fix logic: contact is labeled as "邮箱必填" in UI, so enforce it
   if (!form.contact.trim()) return false
   if (!emailRegex.test(form.contact.trim())) return false
+
   if (loading.value) return false
   const now = Date.now()
   return now - lastSubmitAt.value >= DEBOUNCE_MS
@@ -151,6 +155,8 @@ const submit = async () => {
   }
 }
 
+// Close widget on outside click logic could be added here, but keep it simple for now
+
 onMounted(() => {
   loadDraft()
   fetchConfig()
@@ -158,57 +164,131 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-6 right-6 z-50">
-    <button
-      class="rounded-full bg-blue-600 text-white px-4 py-2 shadow-lg hover:bg-blue-700 transition"
-      @click="isOpen = !isOpen"
+  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4 font-sans text-slate-900">
+    <!-- Feedback Panel -->
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 translate-y-4 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 translate-y-4 scale-95"
     >
-      {{ isOpen ? '关闭反馈' : '我要反馈' }}
-    </button>
-
-    <div
-      v-if="isOpen"
-      class="mt-3 w-80 rounded-xl border border-gray-200 bg-white shadow-xl p-4 space-y-3"
-    >
-      <div class="text-lg font-semibold">问题反馈</div>
-      <div class="space-y-1">
-        <label class="text-sm text-gray-600">反馈内容 *</label>
-        <textarea
-          v-model="form.message"
-          @input="saveDraft"
-          class="w-full rounded border px-2 py-1 text-sm focus:outline-none focus:ring"
-          rows="3"
-          placeholder="请描述遇到的问题"
-        ></textarea>
-      </div>
-      <div class="space-y-1">
-        <label class="text-sm text-gray-600">联系方式（邮箱必填）</label>
-        <input
-          v-model="form.contact"
-          @input="saveDraft"
-          class="w-full rounded border px-2 py-1 text-sm focus:outline-none focus:ring"
-          placeholder="请输入邮箱"
-        />
-        <p v-if="form.contact && !emailRegex.test(form.contact)" class="text-xs text-red-600">请填写有效邮箱地址</p>
-      </div>
-
-      <div class="space-y-2">
-        <button
-          class="w-full rounded bg-blue-600 text-white py-2 text-sm disabled:opacity-50"
-          :disabled="!canSubmit"
-          @click="submit"
-        >
-          {{ loading ? '提交中...' : '提交反馈' }}
-        </button>
-        <div v-if="statusTip" class="text-sm" :class="lastResult?.status === Status.SUCCESS ? 'text-green-600' : 'text-red-600'">
-          {{ statusTip }}
+      <div
+        v-if="isOpen"
+        class="w-96 origin-bottom-right rounded-2xl bg-white p-0 shadow-2xl ring-1 ring-slate-900/5 focus:outline-none"
+        tabindex="-1"
+      >
+        <!-- Header -->
+        <div class="relative overflow-hidden rounded-t-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
+          <div class="relative z-10">
+            <h3 class="text-lg font-semibold">帮助我们改进</h3>
+            <p class="mt-1 text-sm text-blue-100">由于您的反馈，我们变得更好</p>
+          </div>
+          <!-- Decorative circle -->
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
+          <div class="absolute -left-6 -bottom-6 h-24 w-24 rounded-full bg-blue-400/20 blur-xl"></div>
         </div>
-        <div v-if="error" class="text-sm text-red-600">{{ error }}</div>
+
+        <!-- Content -->
+        <div class="p-6 space-y-5">
+          <div class="space-y-1.5">
+            <label class="block text-sm font-medium text-slate-700">
+              反馈内容 <span class="text-red-500">*</span>
+            </label>
+            <textarea
+              v-model="form.message"
+              @input="saveDraft"
+              class="w-full resize-none rounded-lg border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+              rows="4"
+              placeholder="请详细描述您遇到的问题或建议..."
+            ></textarea>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-sm font-medium text-slate-700">
+              联系方式 <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input
+                v-model="form.contact"
+                @input="saveDraft"
+                type="email"
+                class="w-full rounded-lg border-slate-200 bg-slate-50 pl-10 pr-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                placeholder="您的邮箱地址"
+              />
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </div>
+            </div>
+            <p v-if="form.contact && !emailRegex.test(form.contact)" class="text-xs text-red-500 slide-down">
+              请填写有效的邮箱地址，以便我们联系您
+            </p>
+          </div>
+
+          <!-- Status Messages -->
+          <div v-if="statusTip || error" class="rounded-lg p-3 text-sm" :class="lastResult?.status === Status.SUCCESS ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'">
+            <div class="flex items-center gap-2">
+              <svg v-if="lastResult?.status === Status.SUCCESS" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+              <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+              <span>{{ statusTip || error }}</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <button
+            class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
+            :disabled="!canSubmit"
+            @click="submit"
+          >
+            <svg v-if="loading" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span v-else>提交反馈</span>
+          </button>
+        </div>
+
+        <!-- Footer info -->
+        <div class="border-t border-slate-100 p-3 text-center">
+             <p class="text-[10px] text-slate-400">Powered by ServiceLinkLite</p>
+        </div>
       </div>
-    </div>
+    </Transition>
+
+    <!-- Trigger Button -->
+    <button
+      class="group flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-95"
+      @click="isOpen = !isOpen"
+      @mouseenter="isHovered = true"
+      @mouseleave="isHovered = false"
+      aria-label="Toggle feedback form"
+    >
+      <div class="relative">
+        <svg
+          class="h-7 w-7 transition-all duration-300 transform absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          :class="isOpen ? 'opacity-0 scale-50 rotate-90' : 'opacity-100 scale-100 rotate-0'"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        >
+          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+        </svg>
+        <svg
+          class="h-7 w-7 transition-all duration-300 transform absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          :class="isOpen ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 -rotate-90'"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        >
+          <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+        </svg>
+      </div>
+    </button>
   </div>
 </template>
 
 <style scoped>
+/* Optional: specific transition overrides if Tailwind classes aren't enough */
+.slide-down {
+  animation: slideDown 0.2s ease-out;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
 

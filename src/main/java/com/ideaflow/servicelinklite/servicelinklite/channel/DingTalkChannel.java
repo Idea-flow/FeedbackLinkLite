@@ -45,9 +45,9 @@ public class DingTalkChannel implements MessageChannel {
             if (StringUtils.hasText(context.getPageUrl())) {
                 content += "\n页面: " + context.getPageUrl();
             }
-            if (StringUtils.hasText(context.getUserAgent())) {
-                content += "\nUA: " + context.getUserAgent();
-            }
+//            if (StringUtils.hasText(context.getUserAgent())) {
+//                content += "\nUA: " + context.getUserAgent();
+//            }
             text.put("content", content);
 
             HttpHeaders headers = new HttpHeaders();
