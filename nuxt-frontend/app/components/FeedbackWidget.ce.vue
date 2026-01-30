@@ -54,7 +54,6 @@ const apiBaseUrl = computed(() => {
 
 const withBase = (path: string) => `${apiBaseUrl.value}${path}`
 
-console.log('apiBaseUrl---:', apiBaseUrl)
 
 const isOpen = ref(false)
 const isHovered = ref(false)
@@ -163,6 +162,7 @@ const handleMouseLeave = () => { isHovered.value = false }
 
 onMounted(() => {
   loadDraft()
+  console.log('最终API请求地址:', withBase('/feedback'))
 })
 </script>
 
