@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      apiBase:  'http://localhost:4567/api'
+      apiBase:  ''
     }
   },
   vue: {

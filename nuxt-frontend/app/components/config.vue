@@ -18,7 +18,26 @@ interface FeedbackConfig {
 }
 
 const runtimeConfig = useRuntimeConfig()
+let isDev = process.env.NODE_ENV === "development";
+
 const apiBase = computed(() => {
+
+
+  if (isDev){
+    console.log('config-isDev-http://localhost:4567/api')
+    return 'http://localhost:4567/api'
+  }else {
+    console.log('config-is-online')
+  }
+
+  // 在客户端环境下，根据当前域名动态生成 API 地址
+  if (typeof window !== 'undefined') {
+    // 其他情况下默认使用相对路径 /api
+    return '/api'
+  }
+
+  
+  // 在服务端渲染时使用运行时配置
   const runtimeBase = (runtimeConfig.public as any)?.apiBase as string | undefined
   const windowBase = typeof window !== 'undefined' ? (window as any).__SL_API_BASE__ : ''
   return (runtimeBase || windowBase || '/api').replace(/\/$/, '')
@@ -129,7 +148,7 @@ onMounted(() => {
       <div class="flex flex-col gap-3 rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 via-slate-50 to-indigo-50 p-6 shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 class="text-2xl font-semibold text-slate-900">服务配置12</h1>
+            <h1 class="text-2xl font-semibold text-slate-900">服务配置</h1>
             <p class="text-sm text-slate-600">配置反馈通道与频控策略，实时生效</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-sm text-slate-700">
