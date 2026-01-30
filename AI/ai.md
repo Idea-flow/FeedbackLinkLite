@@ -32,10 +32,16 @@ npm create nuxt@latest
 npx nuxi@latest module add tailwindcss
 
 
+
+pnpm install
 pnpm run dev 
 
 
-如何吧 frontend 加入到 serviceLinkLite 这个项目的 git里
+功能: 使用nuxt4, tailwindcss 完成 AI/plan.md中相关前端的功能, 并更改这个文件中关于前端功能的技术栈相关的功能
 
-git add frontend package-lock.json .gitignore
-git status
+
+
+后端的接口地址支持可以配置,开发环境支持配置接口地址,线上是现有的接口地址,因为线上会打包成静态页面
+
+
+

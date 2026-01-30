@@ -5,16 +5,15 @@
 - 后端以策略模式路由消息到钉钉（首版）并预留多渠道扩展，支持启用开关与多渠道并发发送。
 - 提供配置与频控能力（启用、Webhook、频率阈值），前端接口返回明确状态枚举。
 
-## 前端方案（单 JS 引入）
+## 前端方案
+- 已有基础前端项目框架 nuxt-frontend项目,已经引入的tailwindcss依赖
 - 形态：用户 `<script src="//cdn.../servicelinklite.js"></script>` 即可加载；内置悬浮按钮与弹窗 UI，支持自定义主题/位置。
 - 功能：
   - 悬浮按钮 → 弹出对话框；字段：消息内容、联系方式（可选）、来源 URL/UA 自动附加。
   - 输入校验与节流（如 3s 内防抖）；本地缓存草稿与最近一次提交结果。
   - 调用后端固定接口 `/api/feedback`，处理返回状态（成功/失败/频繁/未配置渠道/未配置地址/禁用）。
 - 技术建议：
-  - 构建：Vite + 原生 TS（目标输出 UMD/IIFE，打包压缩，内联样式，避免外部依赖）。
-  - DOM 隔离：Shadow DOM 或前缀化样式，防止污染宿主页面；命名空间事件避免冲突。
-  - 安全：仅允许 HTTPS；校验后端域名白名单；最小化依赖，避免 XSS（转义用户输入）。
+  - 构建：Nuxt 4 + TypeScript + @nuxtjs/tailwindcss，常规 dev 以 Nuxt 页面联调。
 
 ## 后端方案
 - 架构：Spring Boot；控制器 → 服务层 → 策略路由（ChannelStrategy） → 具体渠道适配器（钉钉等）。
@@ -31,7 +30,7 @@
 - 日志与审计：记录请求 ID、来源 IP、URL、渠道结果；失败重试暂不做，留扩展点。
 
 ## 待完成功能与实施步骤
-- 前端技术选型确认：Vite + TS，单文件 UMD/IIFE 产物，Shadow DOM 隔离，无第三方依赖；约定构建命令 `npm run build` 输出 `dist/servicelinklite.js`，暴露挂载函数且默认自动挂载。
+- 前端技术选型确认：Nuxt + TS + Tailwind，Lib 构建单文件 IIFE 产物，Shadow DOM 隔离，默认自动挂载；约定 `pnpm run build:lib` 输出 `dist/servicelinklite.js`。
 - 前端开发任务：
   - 悬浮按钮与弹窗 UI（主题/位置可配置），命名空间样式/事件。
   - 字段校验（必填 message，contact 可选）+ 3s 防抖；本地缓存草稿与最近提交结果。
@@ -51,7 +50,7 @@
 - 发布与交付：前端发布通道待定（OSS+CDN 或 npm+UNPKG），后端提供 Dockerfile；确认运行环境限制后收敛方案。
 
 ## 技术选型
-- 前端：Vite + TS + Shadow DOM；内置 minimal UI，无第三方依赖；打包成单文件 CDN 发布。
+- 前端：Nuxt 3/4 + TS + Tailwind；内置 minimal UI，Lib 模式产出单文件 CDN 发布；Shadow DOM/样式前缀避免污染。
 - 后端：Spring Boot 4 + Web + Validation；HTTP 客户端用 `WebClient`；缓存 `Caffeine`；频控 自研滑窗；日志 `Slf4j`。
 - 部署：容器化（Dockerfile）
 
