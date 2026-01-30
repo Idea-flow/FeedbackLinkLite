@@ -8,24 +8,12 @@
         <version>4.0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ideaflow.servicelinklite</groupId>
-    <artifactId>ServiceLinkLite</artifactId>
+    <groupId>com.ideaflow.feedbacklinklite</groupId>
+    <artifactId>FeedbackLinkLite</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ServiceLinkLite</name>
-    <description>ServiceLinkLite</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <name>FeedbackLinkLite</name>
+    <description>FeedbackLinkLite</description>
+
     <properties>
         <java.version>25</java.version>
     </properties>

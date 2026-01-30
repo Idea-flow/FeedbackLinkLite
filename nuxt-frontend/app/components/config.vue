@@ -29,6 +29,26 @@ const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
 const success = ref('')
+const toastMessage = ref('')
+const toastVisible = ref(false)
+const toastTimer = ref<number | null>(null)
+
+// 新增显示Toast的方法
+const showToast = (message: string) => {
+  toastMessage.value = message
+  toastVisible.value = true
+
+  if (toastTimer.value) {
+    clearTimeout(toastTimer.value)
+  }
+
+  toastTimer.value = window.setTimeout(() => {
+    toastVisible.value = false
+    toastMessage.value = ''
+    toastTimer.value = null
+  }, 2800)
+}
+
 const form = reactive<FeedbackConfig>({
   enabled: true,
   dingTalk: { webhook: '', secret: '' },
@@ -64,7 +84,6 @@ const loadConfig = async () => {
     const data = await res.json()
     Object.assign(form, data)
     Object.assign(original, JSON.parse(JSON.stringify(data)))
-    success.value = ''
   } catch (e: any) {
     error.value = '加载配置失败，请稍后再试'
   } finally {
@@ -74,14 +93,12 @@ const loadConfig = async () => {
 
 const resetToServer = () => {
   Object.assign(form, JSON.parse(JSON.stringify(original)))
-  success.value = ''
   error.value = ''
 }
 
 const saveConfig = async () => {
   if (!validate()) return
   saving.value = true
-  success.value = ''
   error.value = ''
   try {
     const res = await fetch(withBase('/config'), {
@@ -92,7 +109,7 @@ const saveConfig = async () => {
     if (!res.ok) throw new Error('save failed')
     const data = await res.json()
     Object.assign(original, JSON.parse(JSON.stringify(data)))
-    success.value = '保存成功'
+    showToast('保存成功')
   } catch (e: any) {
     error.value = '保存失败，请稍后再试'
   } finally {
@@ -106,16 +123,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-red-500">
-    dagdag
-  </div>
 
   <div class="min-h-screen bg-slate-50 py-10">
     <div class="mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-0">
       <div class="flex flex-col gap-3 rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 via-slate-50 to-indigo-50 p-6 shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 class="text-2xl font-semibold text-slate-900">服务配置</h1>
+            <h1 class="text-2xl font-semibold text-slate-900">服务配置12</h1>
             <p class="text-sm text-slate-600">配置反馈通道与频控策略，实时生效</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 text-sm text-slate-700">
@@ -124,8 +138,8 @@ onMounted(() => {
               接口基址：{{ apiBase }}
             </span>
             <span
-              class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-white shadow-sm"
-              :class="form.enabled ? 'bg-green-500' : 'bg-slate-400'"
+                class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-white shadow-sm"
+                :class="form.enabled ? 'bg-green-500' : 'bg-slate-400'"
             >
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path v-if="form.enabled" d="m5 13 4 4L19 7" />
@@ -139,10 +153,6 @@ onMounted(() => {
           <div v-if="error" class="flex items-center gap-2 rounded-md border border-red-100 bg-red-50 px-3 py-2 text-red-700">
             <svg class="h-4 w-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.86a2 2 0 0 0-3.42 0Z"/></svg>
             <span>{{ error }}</span>
-          </div>
-          <div v-if="success" class="flex items-center gap-2 rounded-md border border-green-100 bg-green-50 px-3 py-2 text-green-700">
-            <svg class="h-4 w-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
-            <span>{{ success }}</span>
           </div>
           <div v-if="loading" class="flex items-center gap-2 rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700">
             <svg class="h-4 w-4 animate-spin text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
@@ -178,18 +188,18 @@ onMounted(() => {
               <div class="space-y-1">
                 <label class="text-sm font-medium text-slate-800">Webhook *</label>
                 <input
-                  v-model="form.dingTalk.webhook"
-                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
-                  placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."
+                    v-model="form.dingTalk.webhook"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                    placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."
                 />
                 <p class="text-xs text-slate-500">使用钉钉机器人提供的完整 webhook 地址</p>
               </div>
               <div class="space-y-1">
                 <label class="text-sm font-medium text-slate-800">Secret (可选)</label>
                 <input
-                  v-model="form.dingTalk.secret"
-                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
-                  placeholder="未启用签名可留空"
+                    v-model="form.dingTalk.secret"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                    placeholder="未启用签名可留空"
                 />
                 <p class="text-xs text-slate-500">开启签名校验时填写密钥，否则可留空</p>
               </div>
@@ -211,10 +221,10 @@ onMounted(() => {
               <label class="text-sm font-medium text-slate-800">每分钟限制次数 *</label>
               <div class="flex items-center gap-3">
                 <input
-                  type="number"
-                  v-model.number="form.rateLimit.limitPerMinute"
-                  class="w-44 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
-                  min="1"
+                    type="number"
+                    v-model.number="form.rateLimit.limitPerMinute"
+                    class="w-44 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                    min="1"
                 />
                 <span class="text-xs text-slate-500">需为正整数</span>
               </div>
@@ -226,18 +236,18 @@ onMounted(() => {
           <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
             <p class="text-sm font-semibold text-slate-900">操作</p>
             <button
-              class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-50"
-              :disabled="saving || loading || !isDirty"
-              @click="saveConfig"
+                class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="saving || loading || !isDirty"
+                @click="saveConfig"
             >
               <svg v-if="saving" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
               <span v-if="saving">保存中...</span>
               <span v-else>保存配置</span>
             </button>
             <button
-              class="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus:ring focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
-              :disabled="saving || loading"
-              @click="resetToServer"
+                class="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus:ring focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                :disabled="saving || loading"
+                @click="resetToServer"
             >
               重置为服务器值
             </button>
@@ -255,6 +265,29 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- 保存成功提示 -->
+    <Transition name="toast-fade">
+      <div
+          v-if="toastVisible && toastMessage"
+          class="fixed top-6 right-6 flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-green-700 shadow-lg ring-1 ring-green-100 backdrop-blur-sm bg-white/80"
+          style="z-index: 9999"
+      >
+        <svg class="h-4 w-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>
+        <span>{{ toastMessage }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
+<style scoped>
+.toast-fade-enter-active,
+.toast-fade-leave-active {
+  transition: all 0.3s ease;
+}
+.toast-fade-enter-from,
+.toast-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+</style>

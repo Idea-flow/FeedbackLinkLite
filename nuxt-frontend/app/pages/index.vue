@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import FeedbackWidget from '~/components/FeedbackWidget.vue'
+import config from '~/components/config.vue'
 </script>
 
 <template>
-  <FeedbackWidget />
+  <config />
 </template>
 
 <style scoped>

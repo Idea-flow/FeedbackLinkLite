@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "build:widget": "vite build -c vite.widget.config.ts && cp dist-widget/feedback-widget.js public/feedback-widget.js",
+    "build:widget": "vite build -c vite.widget.config.ts && cp dist-widget/feedback.js public/feedback.js",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

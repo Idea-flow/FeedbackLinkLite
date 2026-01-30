@@ -16,7 +16,7 @@ onMounted(() => {
 
 <template>
   <div class="p-8">
-    <h1 class="text-2xl font-bold mb-4">Web Component 测试</h1>
+    <h1 class="text-2xl font-bold mb-4">Web Component 测试3</h1>
     <p>组件应该显示在右下角。</p>
 
     <!-- 使用注册的自定义元素标签 -->

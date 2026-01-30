@@ -10,8 +10,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'widget-entry.ts'),
-      name: 'FeedbackWidget',
-      fileName: (format) => `feedback-widget.js`, // Always use .js extension
+      name: 'Feedback',
+      fileName: (format) => `feedback.js`, // Always use .js extension
       formats: ['iife']
     },
     rollupOptions: {
@@ -23,4 +23,3 @@ export default defineConfig({
     emptyOutDir: true
   }
 })
-
