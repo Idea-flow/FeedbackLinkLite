@@ -180,26 +180,26 @@ onMounted(() => {
         tabindex="-1"
       >
         <!-- Header -->
-        <div class="relative overflow-hidden rounded-t-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
+        <div class="relative overflow-hidden rounded-t-2xl bg-gradient-to-br from-orange-400 via-rose-500 to-pink-600 p-6 text-white">
           <div class="relative z-10">
-            <h3 class="text-lg font-semibold">帮助我们改进</h3>
-            <p class="mt-1 text-sm text-blue-100">由于您的反馈，我们变得更好</p>
+            <h3 class="text-lg font-semibold tracking-wide">帮助我们改进</h3>
+            <p class="mt-1 text-sm text-white/90">您的反馈是我们前进的动力</p>
           </div>
           <!-- Decorative circle -->
-          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
-          <div class="absolute -left-6 -bottom-6 h-24 w-24 rounded-full bg-blue-400/20 blur-xl"></div>
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-yellow-300/30 blur-2xl"></div>
+          <div class="absolute -left-6 -bottom-6 h-24 w-24 rounded-full bg-white/20 blur-2xl"></div>
         </div>
 
         <!-- Content -->
         <div class="p-6 space-y-5">
           <div class="space-y-1.5">
             <label class="block text-sm font-medium text-slate-700">
-              反馈内容 <span class="text-red-500">*</span>
+              反馈内容 <span class="text-rose-500">*</span>
             </label>
             <textarea
               v-model="form.message"
               @input="saveDraft"
-              class="w-full resize-none rounded-lg border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+              class="w-full resize-none rounded-xl border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-rose-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
               rows="4"
               placeholder="请详细描述您遇到的问题或建议..."
             ></textarea>
@@ -207,21 +207,21 @@ onMounted(() => {
 
           <div class="space-y-1.5">
             <label class="block text-sm font-medium text-slate-700">
-              联系方式 <span class="text-red-500">*</span>
+              联系方式 <span class="text-rose-500">*</span>
             </label>
             <div class="relative">
               <input
                 v-model="form.contact"
                 @input="saveDraft"
                 type="email"
-                class="w-full rounded-lg border-slate-200 bg-slate-50 pl-10 pr-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                class="w-full rounded-xl border-slate-200 bg-slate-50 pl-11 pr-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-rose-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-500 transition-all shadow-sm"
                 placeholder="您的邮箱地址"
               />
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                <svg class="h-5 w-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
               </div>
             </div>
-            <p v-if="form.contact && !emailRegex.test(form.contact)" class="text-xs text-red-500 slide-down">
+            <p v-if="form.contact && !emailRegex.test(form.contact)" class="text-xs text-rose-500 slide-down mt-1">
               请填写有效的邮箱地址，以便我们联系您
             </p>
           </div>
@@ -237,25 +237,26 @@ onMounted(() => {
 
           <!-- Actions -->
           <button
-            class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
+            class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-rose-500/25 transition-all duration-300 hover:shadow-rose-500/40 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             :disabled="!canSubmit"
             @click="submit"
           >
-            <svg v-if="loading" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div class="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+            <svg v-if="loading" class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             <span v-else>提交反馈</span>
           </button>
         </div>
 
         <!-- Footer info -->
-        <div class="border-t border-slate-100 p-3 text-center">
-             <p class="text-[10px] text-slate-400">Powered by ServiceLinkLite</p>
+        <div class="border-t border-slate-100 p-3 text-center bg-slate-50/50 rounded-b-2xl">
+             <p class="text-[10px] text-slate-400 font-medium">Powered by ServiceLinkLite</p>
         </div>
       </div>
     </Transition>
 
     <!-- Trigger Button -->
     <button
-      class="group flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-95"
+      class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-rose-600 text-white shadow-lg shadow-rose-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-500/40 focus:outline-none focus:ring-4 focus:ring-orange-200 active:scale-95"
       @click="isOpen = !isOpen"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
