@@ -21,7 +21,7 @@ interface FeedbackConfig {
 
 interface FeedbackRequest {
   message: string
-  contact?: string
+  contact: string
   pageUrl?: string
   userAgent?: string
 }
@@ -280,13 +280,15 @@ onMounted(() => {
   -webkit-text-size-adjust: 100%;
   -moz-tab-size: 4;
   tab-size: 4;
+  position: relative;
+  z-index: 2147483647;
 }
 
 .feedback-widget-container {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 9999;
+  z-index: 2147483647;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
