@@ -58,3 +58,22 @@ pages/config.vue   使用UI/UX Pro Max 的技能重构这个配置页面的ui
 # 钉钉
 
 https://oapi.dingtalk.com/robot/send?access_token=aee3a48746bb9385eb188f489a09f67c9638079e5b74802f32dcabc487d928a5
+
+
+
+
+
+# 引入:
+
+做一个功能,被其他页面引入就能使用,只在右下脚弹出即可 例如 <script src="/servicelinklite.js"></script> 引入一个这个类似的js文件,
+
+
+重构:
+参考这个/Users/wangpenglong/projects/java/ServiceLinkLite/nuxt-frontend/app/components/FeedbackWidget.vue 功能
+
+
+做一个js文件,引入这个js文件,就可以实现类似这个组件的功能
+类似这样引入
+<script src="//xxx/servicelinklite.js"></script>
+
+//test-feedback-widget.vue

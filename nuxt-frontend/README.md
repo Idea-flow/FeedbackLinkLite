@@ -30,6 +30,7 @@ npm run dev
 
 # pnpm
 pnpm dev
+pnpm generate
 
 # yarn
 yarn dev
