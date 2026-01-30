@@ -3,6 +3,7 @@ package com.ideaflow.servicelinklite.servicelinklite;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -10,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class ServiceLinkLiteApplication {
 
     public static void main(String[] args) throws UnknownHostException {

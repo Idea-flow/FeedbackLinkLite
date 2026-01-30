@@ -7,3 +7,12 @@ spring:
   threads:
     virtual:
       enabled: true
+
+feedback:
+  enabled: true
+  dingTalk:
+    webhook: ""
+    secret: ""
+  rate-limit:
+    enabled: true
+    limit-per-minute: 10
