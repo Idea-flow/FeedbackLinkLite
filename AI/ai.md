@@ -77,3 +77,25 @@ https://oapi.dingtalk.com/robot/send?access_token=aee3a48746bb9385eb188f489a09f6
 <script src="//xxx/servicelinklite.js"></script>
 
 //test-feedback-widget.vue
+
+
+做一个js文件,是一个反馈内容的,是否可以吧FeedbackWidget.vue 这个组件融合渲染进去,最后打包成一个js文件, 我是一个小白,不知道如何做,给我方案
+
+
+
+
+做一个通用的前端 用户反馈 的页面功能呢, 前端输入问题 和邮箱 调用后端接口 即可
+其他任何页面 引入这个js文件,就可以实现悬浮按钮,点击弹出对话框,输入内容,发送到后端接口的功能
+实现一个通用的前端用户反馈功能（悬浮按钮 + 弹窗表单 + 调用后端接口）
+
+使用nuxt4完成这个功能,单独提供一个命令,吧这块功能 打包成一个单独的js文件,其他任何页面引入这个js文件
+
+
+
+<!-- 方式一：默认配置（假设后端接口在当前域名的 /api 下） -->
+<script src="./feedback-widget.js"></script>
+
+<!-- 方式二：指定后端接口地址 -->
+<script src="./feedback-widget.js" data-api-base="http://localhost:8080/api"></script>
+
+
