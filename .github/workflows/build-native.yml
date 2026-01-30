@@ -1,7 +1,7 @@
 name: Build and Push Native Image
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main-docker" ]
   workflow_dispatch: # 允许手动触发
 
 env:
