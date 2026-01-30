@@ -8,7 +8,7 @@ interface DingTalkConfig {
 
 interface RateLimitConfig {
   enabled: boolean
-  limitPerMinute: number
+  maxRequests: number
 }
 
 interface FeedbackConfig {
@@ -52,12 +52,12 @@ const showToast = (message: string) => {
 const form = reactive<FeedbackConfig>({
   enabled: true,
   dingTalk: { webhook: '', secret: '' },
-  rateLimit: { enabled: true, limitPerMinute: 10 }
+  rateLimit: { enabled: true, maxRequests: 10 }
 })
 const original = reactive<FeedbackConfig>({
   enabled: true,
   dingTalk: { webhook: '', secret: '' },
-  rateLimit: { enabled: true, limitPerMinute: 10 }
+  rateLimit: { enabled: true, maxRequests: 10 }
 })
 
 const isDirty = computed(() => JSON.stringify(form) !== JSON.stringify(original))
@@ -68,7 +68,7 @@ const validate = () => {
     error.value = '钉钉 webhook 必填'
     return false
   }
-  if (form.rateLimit.limitPerMinute <= 0) {
+  if (form.rateLimit.maxRequests <= 0) {
     error.value = '频控阈值需为正整数'
     return false
   }
@@ -210,23 +210,37 @@ onMounted(() => {
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-lg font-semibold text-slate-900">频控</p>
-                <p class="text-sm text-slate-600">防止滥用，按分钟限制请求次数</p>
+                <p class="text-sm text-slate-600">防止滥用，在时间窗口内限制最大请求数</p>
               </div>
               <label class="inline-flex cursor-pointer select-none items-center gap-2 text-sm font-medium text-slate-700">
                 <input type="checkbox" v-model="form.rateLimit.enabled" class="h-4 w-4" />
                 {{ form.rateLimit.enabled ? '已启用' : '未启用' }}
               </label>
             </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-800">每分钟限制次数 *</label>
-              <div class="flex items-center gap-3">
-                <input
-                    type="number"
-                    v-model.number="form.rateLimit.limitPerMinute"
-                    class="w-44 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
-                    min="1"
-                />
-                <span class="text-xs text-slate-500">需为正整数</span>
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-800">时间窗口内最大请求数 *</label>
+                <div class="flex items-center gap-3">
+                  <input
+                      type="number"
+                      v-model.number="form.rateLimit.maxRequests"
+                      class="w-44 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                      min="1"
+                  />
+                  <span class="text-xs text-slate-500">需为正整数</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label class="text-sm font-medium text-slate-800">时间窗口（分钟）</label>
+                <div class="flex items-center gap-3">
+                  <input
+                      type="number"
+                      :value="form.rateLimit.windowMinutes"
+                      class="w-44 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors bg-slate-100"
+                      readonly
+                  />
+                  <span class="text-xs text-slate-500">只读，不可修改</span>
+                </div>
               </div>
             </div>
           </div>

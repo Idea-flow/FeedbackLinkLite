@@ -26,7 +26,8 @@ public class ConfigController {
         feedbackProperties.getDingTalk().setWebhook(updated.getDingTalk().getWebhook());
         feedbackProperties.getDingTalk().setSecret(updated.getDingTalk().getSecret());
         feedbackProperties.getRateLimit().setEnabled(updated.getRateLimit().isEnabled());
-        feedbackProperties.getRateLimit().setLimitPerMinute(updated.getRateLimit().getLimitPerMinute());
+        feedbackProperties.getRateLimit().setMaxRequests(updated.getRateLimit().getMaxRequests());
+        // windowMinutes is not configurable via API
         return ResponseEntity.ok(true);
     }
 }
