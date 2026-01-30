@@ -41,6 +41,6 @@ frontend/.output/
 frontend/.turbo/
 frontend/.next/
 frontend/.vercel/
-
+.DS_Store
 
 
