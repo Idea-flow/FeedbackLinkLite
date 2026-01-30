@@ -1,0 +1,9 @@
+server:
+  port: 4567
+
+spring:
+  application:
+    name: ServiceLinkLite
+  threads:
+    virtual:
+      enabled: true
