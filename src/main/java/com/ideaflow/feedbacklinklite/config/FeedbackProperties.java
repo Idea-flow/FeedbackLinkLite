@@ -21,7 +21,13 @@ public class FeedbackProperties {
     @Data
     public static class RateLimit {
         private boolean enabled = true;
-        private int limitPerMinute = 1;
+        /**
+         * Max requests allowed within the window.
+         */
+        private int maxRequests = 3;
+        /**
+         * Time window in minutes.
+         */
+        private int windowMinutes = 60;
     }
 }
-

@@ -4,12 +4,6 @@ server:
 spring:
   application:
     name: ServiceLinkLite
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    suffix: .html
-    encoding: UTF-8
-    mode: HTML
   threads:
     virtual:
       enabled: true
@@ -21,4 +15,5 @@ feedback:
     secret: ""
   rate-limit:
     enabled: true
-    limit-per-minute: 1
+    max-requests: 5
+    window-minutes: 60

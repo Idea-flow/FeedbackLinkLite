@@ -32,6 +32,8 @@ npm run dev
 pnpm dev
 pnpm generate
 
+pnpm build:widget
+
 # yarn
 yarn dev
 

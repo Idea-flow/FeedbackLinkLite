@@ -52,14 +52,14 @@ public class DingTalkChannel implements MessageChannel {
 
             markdown.put("text", content.toString());
 
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_JSON);
-//            HttpEntity<String> entity = new HttpEntity<>(payload.toString(), headers);
-//            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-//            if (response.getStatusCode().is2xxSuccessful()) {
-//                return ChannelResult.ok();
-////            }
-//            log.warn("DingTalk send failed status={} body={}", response.getStatusCode(), response.getBody());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(payload.toString(), headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return ChannelResult.ok();
+            }
+            log.warn("DingTalk send failed status={} body={}", response.getStatusCode(), response.getBody());
             return ChannelResult.fail("DingTalk send failed");
         } catch (Exception ex) {
             log.error("DingTalk send exception", ex);
@@ -80,16 +80,19 @@ public class DingTalkChannel implements MessageChannel {
         return contact.substring(0, keep) + "***";
     }
 
-    // 新增方法：转义 Markdown 特殊字符，防止格式渲染问题
+    // 更新方法：转义 Markdown 特殊字符，同时保留换行符
     private String escapeMarkdownContent(String content) {
         if (content == null) {
             return "";
         }
         
-        // 处理多个连续空格，替换为单个空格或保留适当的空格
+        // 先处理换行符，将其标准化为 \n
+        content = content.replace("\r\n", "\n").replace("\r", "\n");
+        
+        // 处理多个连续空格，但保留有意义的空格
         content = content.replaceAll(" {2,}", " ");
         
-        // 转义 Markdown 特殊字符
+        // 转义 Markdown 特殊字符，但不转义换行符
         content = content.replace("\\", "\\\\"); // 反斜杠
         content = content.replace("`", "\\`"); // 反引号
         content = content.replace("*", "\\*"); // 星号
@@ -107,7 +110,10 @@ public class DingTalkChannel implements MessageChannel {
         content = content.replace("!", "\\!"); // 感叹号
         content = content.replace("~", "\\~"); // 波浪号
         content = content.replace("|", "\\|"); // 竖线
-        content = content.replace(">", "\\>"); // 大于号
+        
+        // 在 Markdown 中，要实现真正的换行，通常需要在行尾加两个空格加换行
+        // 或者使用 <br> 标签，但考虑到安全性和兼容性，我们直接保留换行
+        content = content.replace("\n", "  \n"); // 在每行末尾添加两个空格和换行符，使 Markdown 正确渲染换行
         
         return content;
     }

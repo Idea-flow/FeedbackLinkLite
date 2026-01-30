@@ -19,7 +19,6 @@ public class ConfigController {
     public FeedbackProperties getConfig() {
         return feedbackProperties;
     }
-
     @PostMapping
     public ResponseEntity<Boolean> update(@RequestBody FeedbackProperties updated) {
         // For simplicity first version: overwrite in-memory properties
