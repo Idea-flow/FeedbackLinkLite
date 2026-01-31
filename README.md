@@ -1,8 +1,10 @@
-# ServiceLinkLite - 轻量级用户反馈系统
+# FeedbackLinkLite - 轻量级用户反馈系统
 
 > **"倾听用户的声音，是产品进化的捷径。"**
 
-## 🌟 核心理念：利他 (Altruism)
+[https://github.com/Idea-flow/FeedbackLinkLite](https://github.com/Idea-flow/FeedbackLinkLite)
+
+## 🌟 核心理念
 
 在独立开发和小型项目的世界里，我们深知每一行代码背后的心血。然而，无论产品构思多么精妙，如果听不到用户的声音，就如同在黑暗中摸索。
 
@@ -11,8 +13,8 @@
 - **让用户受益**：当您的用户遇到问题或有好的建议时，他们能拥有一个极简、无压力的渠道与您沟通。这不仅解决了他们的问题，更让您的产品因为他们的参与而变得更好。
 
 这是一个连接创造者与使用者的桥梁。我们相信，开放反馈渠道本身就是一种对他人的尊重与关怀，而这份"利他"之心，终将回馈于您的产品成长。
-
----
+  
+---  
 
 ## 🚀 项目介绍
 
@@ -32,42 +34,115 @@
 
 ## 🛠 技术栈
 
-- **后端**: Java 17+, Spring Boot
+- **后端**: Java 21+, Spring Boot4 (Native/GraalVM)
 - **前端 Widget**: Vue 3 (Web Components), Vite
 
 ## 📦 快速开始
 
 ### 1. 部署后端
-```bash
-# 克隆项目
-git clone https://github.com/your-repo/ServiceLinkLite.git
-
-# 运行服务
-cd ServiceLinkLite
-./mvnw spring-boot:run
-```
+```bash  
+# 克隆项目  
+git clone https://github.com/your-repo/ServiceLinkLite.git  
+  
+# 运行服务  
+cd ServiceLinkLite  
+./mvnw spring-boot:run  
+```  
 
 ### 2. 配置通知渠道 (application.yml)
-```yaml
-feedback:
-  channels:
-    dingtalk:
-      enabled: true
-      access-token: "YOUR_DINGTALK_TOKEN"
-      secret: "YOUR_DINGTALK_SECRET"
-```
+```yaml  
+feedback:  
+  enabled: true  
+  dingTalk:  
+    webhook: ""  
+    secret: ""  
+  rate-limit:  
+    enabled: true  
+    max-requests: 5  
+    window-minutes: 60  
+  auth:  
+    username: "admin"  
+    password: "admin"  
+    token: "token123434kkgdka56"  
+  # 外部配置文件路径，默认指向工作目录下 data/feedback_config.json，可通过 FEEDBACK_CONFIG_PATH 或 feedback.config-path 覆盖  
+  config-path: "./data/feedback_config.json"  
+```  
 
 ### 3. 前端嵌入
 在您的 HTML 页面中添加：
-```html
-<script src="http://your-server-ip-or-domain/feedback.js"></script>
-<feedback-widget api-base="http://your-server-ip:8080"></feedback-widget>
-```
-
----
+```html  
+<script src="http://your-server-ip-or-domain/feedback.js"></script>  
+```  
+  
+---  
 
 ## 🤝 贡献与支持
 如果你觉得这个小工具对你有帮助，欢迎 Star 支持！也欢迎提交 PR 扩展更多消息渠道（如飞书、企业微信、Email 等）。
 
-让我们一起，用代码传递善意。
 
+
+
+
+# 优点
+## 大小-127MB
+
+![image.png](https://oss.6667000.xyz/2026/02/0c07734277b18f741b97ab93aee89bab.webp)
+
+## 内存-仅仅43MB
+![image.png](https://oss.6667000.xyz/2026/02/97ecdff1da1f721af21912df6b2caa31.webp)
+
+# docker运行
+
+## 持久化运行
+```bash  
+  
+如果想持久化配置 /data/feedback_config.json 拷贝到 /xxxx/data 目录下后执行  
+mkdir -p /xxx/data/  
+  
+  
+docker run -d \  
+--name feedbacklinklite \  
+--user root \  
+-p 4567:4567 \  
+-v /xxx/data:/workspace/data \  
+ghcr.io/idea-flow/feedbacklinklite:latest  
+```  
+
+## 简单体验运行
+```bash  
+docker run -d \--name feedbacklinklite \  
+-p 4567:4567 \  
+ghcr.io/idea-flow/feedbacklinklite:latest  
+```  
+## 默认账户密码
+admin  
+admin  
+访问地址即可  
+http://127.0.0.1:4567/
+
+
+# 页面效果
+
+### 前端页面 反馈效果
+#### 明亮模式
+![image.png](https://oss.6667000.xyz/2026/02/5ff7b8faa1ef16705869cecbc3c00a22.webp)
+
+#### 暗黑模式:
+![image.png](https://oss.6667000.xyz/2026/02/bfb5eeaab45e7bae8510f5695d1f6ff5.webp)
+
+
+### 钉钉消息收到效果
+![image.png](https://oss.6667000.xyz/2026/02/5e64c73e99c03225db3282e66d4c0bc3.webp)
+
+
+
+### 登录页面
+
+![image.png](https://oss.6667000.xyz/2026/02/6e332d05f0eb644535599b42b4ecca11.webp)
+
+### 配置页面效果
+#### 第一张:
+![image.png](https://oss.6667000.xyz/2026/02/370c34d126737dcf7c81311bf294b4e1.webp)
+
+#### 第二张:
+![image.png](https://oss.6667000.xyz/2026/02/ec0b7a561b19c70c06bcb96133ef1bb8.webp)
