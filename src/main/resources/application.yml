@@ -17,3 +17,7 @@ feedback:
     enabled: true
     max-requests: 5
     window-minutes: 60
+  auth:
+    username: "admin"
+    password: "admin"
+    token: "token123434kkgdka56"

@@ -98,7 +98,20 @@ const loadConfig = async () => {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch(withBase('/config'))
+    // 跨域请求必须携带凭证 (credentials: 'include') 才能发送 Cookie
+    const res = await fetch(withBase('/config'), {
+      credentials: 'include'
+    })
+
+    // 拦截 401 未授权
+    if (res.status === 401) {
+       // 清除cookie并跳转
+       const auth = useCookie('auth')
+       auth.value = null
+       window.location.href = '/login'
+       return
+    }
+
     if (!res.ok) throw new Error('load config failed')
     const data = await res.json()
     Object.assign(form, data)
@@ -123,8 +136,18 @@ const saveConfig = async () => {
     const res = await fetch(withBase('/config'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
+      body: JSON.stringify(form),
+      credentials: 'include' // 允许发送 Cookie
     })
+
+    // 拦截 401 未授权
+    if (res.status === 401) {
+       const auth = useCookie('auth')
+       auth.value = null
+       window.location.href = '/login'
+       return
+    }
+
     if (!res.ok) throw new Error('save failed')
     const data = await res.json()
     Object.assign(original, JSON.parse(JSON.stringify(data)))
