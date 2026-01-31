@@ -1,7 +1,5 @@
 package com.ideaflow.feedbacklinklite;
 
-import com.ideaflow.feedbacklinklite.config.FeedbackConfigStorage;
-import com.ideaflow.feedbacklinklite.config.FeedbackProperties;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,14 +25,6 @@ public class ServiceLinkLiteApplication {
         String port = env.getProperty("server.port");
         String path = env.getProperty("server.servlet.context-path");
         path = StringUtils.isNotBlank(path) ? path : "";
-
-        // 在启动后尝试加载外部 JSON 配置，覆盖内存配置
-        FeedbackProperties feedbackProperties = application.getBean(FeedbackProperties.class);
-        FeedbackConfigStorage storage = application.getBean(FeedbackConfigStorage.class);
-        FeedbackProperties external = storage.loadIfExists(feedbackProperties);
-        if (external != null) {
-            feedbackProperties.copyFrom(external);
-        }
 
         System.out.println("\n----------------------------------------------------------\n\t" +
                 "blog is running! Access URLs:\n\t" +

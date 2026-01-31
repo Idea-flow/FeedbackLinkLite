@@ -47,7 +47,7 @@ public class FeedbackConfigStorage {
         Path path = resolveConfigPath(properties);
         File file = path.toFile();
         if (!file.exists()) {
-            log.info("外部配置未找到，使用 application.yml: {}", path);
+            log.info("外部配置未找到:{}，使用 application.yml", path);
             return null;
         }
         try {

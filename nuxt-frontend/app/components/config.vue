@@ -24,13 +24,13 @@ interface FeedbackConfig {
 }
 
 // 引入手绘风格字体
-useHead({
-  link: [
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap' }
-  ]
-})
+// useHead({
+//   link: [
+//     { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+//     { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+//     { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap' }
+//   ]
+// })
 
 const runtimeConfig = useRuntimeConfig()
 let isDev = process.env.NODE_ENV === "development";
@@ -213,12 +213,12 @@ onMounted(() => {
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 class="text-3xl font-bold text-gray-900 tracking-wide">服务配置</h1>
-            <p class="text-lg text-gray-600 font-bold mt-1">Config & Dashboard</p>
+            <p class="text-lg text-gray-600 font-bold mt-1">配置面板</p>
           </div>
           <div class="flex flex-wrap items-center gap-3 text-sm font-bold">
             <span class="inline-flex items-center gap-2 rounded-lg border-2 border-black bg-blue-100 px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><path d="M7 12h10"/><path d="M5 19h14"/></svg>
-              API Base: {{ apiBase }}
+              API 基础地址: {{ apiBase }}
             </span>
             <span
                 class="inline-flex items-center gap-2 rounded-lg border-2 border-black px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
@@ -228,7 +228,7 @@ onMounted(() => {
                 <path v-if="form.enabled" d="m5 13 4 4L19 7" />
                 <path v-else d="M18 6 6 18M6 6l12 12" />
               </svg>
-              {{ form.enabled ? 'Enabled' : 'Disabled' }}
+              {{ form.enabled ? '已启用' : '已禁用' }}
             </span>
           </div>
         </div>
@@ -241,7 +241,7 @@ onMounted(() => {
           </div>
           <div v-if="loading" class="flex items-center gap-2 rounded-lg border-2 border-black bg-blue-100 px-4 py-2 text-blue-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            <span>Loading...</span>
+            <span>加载中...</span>
           </div>
         </div>
       </div>
@@ -256,8 +256,8 @@ onMounted(() => {
 
             <div class="flex items-center justify-between relative z-10">
               <div>
-                <p class="text-xl font-bold text-gray-900">System Status</p>
-                <p class="text-base text-gray-600 font-bold mt-1">Accepting Feedback?</p>
+                <p class="text-xl font-bold text-gray-900">系统状态</p>
+                <p class="text-base text-gray-600 font-bold mt-1">接收反馈?</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer select-none">
                 <input type="checkbox" v-model="form.enabled" class="sr-only peer">
@@ -271,10 +271,10 @@ onMounted(() => {
           <div class="rounded-xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-6">
             <div class="flex items-center justify-between border-b-2 border-dashed border-gray-200 pb-4">
               <div>
-                <p class="text-xl font-bold text-gray-900">DingTalk Integration</p>
-                <p class="text-base text-gray-600 font-bold mt-1">Configure your robot</p>
+                <p class="text-xl font-bold text-gray-900">钉钉集成</p>
+                <p class="text-base text-gray-600 font-bold mt-1">配置您的机器人</p>
               </div>
-              <span class="rounded-lg border-2 border-black bg-blue-100 px-3 py-1 text-xs font-bold text-blue-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Webhook Required</span>
+              <span class="rounded-lg border-2 border-black bg-blue-100 px-3 py-1 text-xs font-bold text-blue-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">需要 Webhook</span>
             </div>
             <div class="space-y-5">
               <div class="space-y-2 group">
@@ -286,7 +286,7 @@ onMounted(() => {
                 />
               </div>
               <div class="space-y-2 group">
-                <label class="text-base font-bold text-gray-800 ml-1 block group-hover:-translate-y-0.5 transition-transform">Secret (Optional)</label>
+                <label class="text-base font-bold text-gray-800 ml-1 block group-hover:-translate-y-0.5 transition-transform">密钥 (可选)</label>
                 <input
                     v-model="form.dingTalk.secret"
                     class="w-full rounded-lg border-2 border-black px-4 py-3 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-gray-50 focus:bg-white"
@@ -300,8 +300,8 @@ onMounted(() => {
           <div class="rounded-xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xl font-bold text-gray-900">Rate Limiting</p>
-                <p class="text-base text-gray-600 font-bold mt-1">Prevent abuse</p>
+                <p class="text-xl font-bold text-gray-900">频率限制</p>
+                <p class="text-base text-gray-600 font-bold mt-1">防止滥用</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer select-none">
                 <input type="checkbox" v-model="form.rateLimit.enabled" class="sr-only peer">
@@ -312,7 +312,7 @@ onMounted(() => {
 
             <div class="p-4 bg-gray-50 border-2 border-black rounded-lg space-y-4 border-dashed">
               <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-800">Max Requests</label>
+                <label class="text-sm font-bold text-gray-800">最大请求数</label>
                 <div class="flex items-center gap-3">
                   <input
                       type="number"
@@ -320,11 +320,11 @@ onMounted(() => {
                       class="w-full md:w-48 rounded-lg border-2 border-black px-3 py-2 text-gray-900 focus:outline-none focus:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all"
                       min="1"
                   />
-                  <span class="text-sm font-bold text-gray-500">per window</span>
+                  <span class="text-sm font-bold text-gray-500">每时间窗口</span>
                 </div>
               </div>
               <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-800">Time Window (min)</label>
+                <label class="text-sm font-bold text-gray-800">时间窗口 (分钟)</label>
                 <div class="flex items-center gap-3">
                   <input
                       type="number"
@@ -332,7 +332,7 @@ onMounted(() => {
                       class="w-full md:w-48 rounded-lg border-2 border-gray-300 px-3 py-2 text-gray-500 bg-gray-100 cursor-not-allowed font-bold"
                       readonly
                   />
-                  <span class="text-sm font-bold text-gray-400">Fixed</span>
+                  <span class="text-sm font-bold text-gray-400">固定</span>
                 </div>
               </div>
             </div>
@@ -342,22 +342,22 @@ onMounted(() => {
           <div v-if="form.auth" class="rounded-xl border-4 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-6">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xl font-bold text-gray-900">Security</p>
-                <p class="text-base text-gray-600 font-bold mt-1">Admin Credentials</p>
+                <p class="text-xl font-bold text-gray-900">安全设置</p>
+                <p class="text-base text-gray-600 font-bold mt-1">管理员凭据</p>
               </div>
-              <span class="rounded-lg border-2 border-black bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Relogin Required</span>
+              <span class="rounded-lg border-2 border-black bg-yellow-100 px-3 py-1 text-xs font-bold text-yellow-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">需要重新登录</span>
             </div>
             <div class="space-y-5">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div class="space-y-2 group">
-                    <label class="text-base font-bold text-gray-800 ml-1">Username *</label>
+                    <label class="text-base font-bold text-gray-800 ml-1">用户名 *</label>
                     <input
                         v-model="form.auth.username"
                         class="w-full rounded-lg border-2 border-black px-4 py-3 text-base focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                     />
                   </div>
                   <div class="space-y-2 group">
-                    <label class="text-base font-bold text-gray-800 ml-1">Password *</label>
+                    <label class="text-base font-bold text-gray-800 ml-1">密码 *</label>
                     <input
                         v-model="form.auth.password"
                         type="text"
@@ -366,12 +366,12 @@ onMounted(() => {
                   </div>
               </div>
               <div class="space-y-2 group">
-                <label class="text-base font-bold text-gray-800 ml-1">Auth Token *</label>
+                <label class="text-base font-bold text-gray-800 ml-1">认证令牌 *</label>
                 <input
                     v-model="form.auth.token"
                     class="w-full rounded-lg border-2 border-black px-4 py-3 text-base text-gray-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                 />
-                <p class="text-sm font-bold text-gray-500 mt-1">⚠️ Changing this invalidates current sessions.</p>
+                <p class="text-sm font-bold text-gray-500 mt-1">⚠️ 更改此选项会使当前会话失效。</p>
               </div>
             </div>
           </div>
@@ -380,7 +380,7 @@ onMounted(() => {
         <!-- 右侧操作栏 -->
         <div class="space-y-8">
           <div class="rounded-xl border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-4 sticky top-6">
-            <p class="text-xl font-bold text-gray-900 border-b-2 border-black pb-2">Actions</p>
+            <p class="text-xl font-bold text-gray-900 border-b-2 border-black pb-2">操作</p>
 
             <button
                 class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-black bg-blue-500 px-6 py-3 text-lg font-bold text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-blue-400 hover:-translate-y-0.5 active:translate-y-0 active:translate-x-0.5 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -388,8 +388,8 @@ onMounted(() => {
                 @click="saveConfig"
             >
               <svg v-if="saving" class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-              <span v-if="saving">Saving...</span>
-              <span v-else>Save Changes</span>
+              <span v-if="saving">保存中...</span>
+              <span v-else>保存更改</span>
             </button>
 
             <button
@@ -397,23 +397,23 @@ onMounted(() => {
                 :disabled="saving || loading"
                 @click="resetToServer"
             >
-              Reset
+              重置
             </button>
 
             <div class="p-3 bg-blue-50 border-2 border-black rounded-lg mt-4">
               <p class="text-xs font-bold text-blue-800 leading-relaxed text-center">
-                Changes are applied immediately after saving.
+                更改将在保存后立即生效。
               </p>
             </div>
           </div>
 
           <div class="rounded-xl border-4 border-black border-dashed bg-transparent p-6 text-sm font-bold text-gray-600">
-            <p class="text-lg text-black mb-2">💡 Pro Tips</p>
+            <p class="text-lg text-black mb-2">💡 使用技巧</p>
             <ul class="list-disc space-y-2 pl-4 marker:text-black">
-              <li>Webhooks must start with https://</li>
-              <li>Secrets are only for signed requests</li>
-              <li>Rate limits reset every hour</li>
-              <li>Keep your token safe!</li>
+              <li>Webhooks 必须以 https:// 开头</li>
+              <li>密钥仅用于签名请求</li>
+              <li>频率限制每小时重置</li>
+              <li>请妥善保管您的令牌！</li>
             </ul>
           </div>
         </div>
