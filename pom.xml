@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ideaflow.feedbacklinklite</groupId>
-    <artifactId>FeedbackLinkLite</artifactId>
+    <artifactId>feedback-link-lite</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>FeedbackLinkLite</name>
+    <name>feedback-link-lite</name>
     <description>FeedbackLinkLite</description>
 
     <properties>
