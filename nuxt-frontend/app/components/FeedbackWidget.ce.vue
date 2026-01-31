@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 
 const Status = {
   SUCCESS: 'SUCCESS',
@@ -33,6 +33,7 @@ interface FeedbackResponse {
 
 const STORAGE_KEY = 'servicelinklite_feedback'
 const LAST_RESULT_KEY = 'servicelinklite_feedback_last'
+const THEME_KEY = 'servicelinklite_feedback_theme'
 const DEBOUNCE_MS = 3000
 
 const emailRegex = /^[\w.!#$%&'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)+$/
@@ -87,6 +88,33 @@ const form = reactive<FeedbackRequest>({
 const lastResult = ref<FeedbackResponse | null>(null)
 const error = ref('')
 const lastSubmitAt = ref(0)
+
+// Theme Logic
+const themeMode = ref<'light' | 'dark' | 'system'>('system')
+const systemDark = ref(false)
+
+const currentTheme = computed(() => {
+  if (themeMode.value === 'system') {
+    return systemDark.value ? 'dark' : 'light'
+  }
+  return themeMode.value
+})
+
+const toggleTheme = () => {
+  const modes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system']
+  const nextIndex = (modes.indexOf(themeMode.value) + 1) % modes.length
+  const nextMode = modes[nextIndex]
+  if (nextMode) {
+    themeMode.value = nextMode
+    localStorage.setItem(THEME_KEY, themeMode.value)
+  }
+}
+
+const themeIcon = computed(() => {
+  if (themeMode.value === 'light') return 'sun'
+  if (themeMode.value === 'dark') return 'moon'
+  return 'monitor' // system
+})
 
 const canSubmit = computed(() => {
   if (!form.message.trim()) return false
@@ -179,14 +207,31 @@ const toggleOpen = () => {
 const handleMouseEnter = () => { isHovered.value = true }
 const handleMouseLeave = () => { isHovered.value = false }
 
+const updateSystemTheme = (e: MediaQueryListEvent) => {
+  systemDark.value = e.matches
+}
+
 onMounted(() => {
   loadDraft()
   console.log('最终API请求地址:', withBase('/feedback'))
+  
+  // Theme init
+  const storedTheme = localStorage.getItem(THEME_KEY) as 'light' | 'dark' | 'system' | null
+  if (storedTheme) themeMode.value = storedTheme
+  
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  systemDark.value = mediaQuery.matches
+  mediaQuery.addEventListener('change', updateSystemTheme)
+})
+
+onUnmounted(() => {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaQuery.removeEventListener('change', updateSystemTheme)
 })
 </script>
 
 <template>
-  <div class="feedback-widget-container">
+  <div class="feedback-widget-container" :class="currentTheme">
     <!-- Feedback Panel -->
     <div v-show="isOpen" class="feedback-popup swing-in-bottom-fwd">
       <!-- Header -->
@@ -195,6 +240,14 @@ onMounted(() => {
           <h3>帮助我们改进</h3>
           <p>您的反馈是我们前进的动力</p>
         </div>
+        
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" @click="toggleTheme" :title="`切换主题 (${themeMode})`">
+          <svg v-if="themeIcon === 'sun'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+          <svg v-else-if="themeIcon === 'moon'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </button>
+
         <!-- Decorative circles -->
         <div class="circle circle-1"></div>
         <div class="circle circle-2"></div>
@@ -292,18 +345,37 @@ onMounted(() => {
 </template>
 
 <style>
-/* CSS Reset for Widget - scoped to shadow root if used as CE, but good to be explicit */
-:host {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.5;
-  -webkit-text-size-adjust: 100%;
-  -moz-tab-size: 4;
-  tab-size: 4;
-  position: relative;
-  z-index: 2147483647;
-}
-
+/* Theme Variables - Apple Glassmorphism (Orange Accent) */
 .feedback-widget-container {
+  /* Light Mode (Default) */
+  --primary-color: #FF9500; /* Apple System Orange */
+  --primary-gradient: linear-gradient(135deg, #FF9500, #FFB340);
+  --accent-glow: radial-gradient(circle at top right, rgba(255, 149, 0, 0.15), transparent 70%);
+  
+  --bg-color: #ffffff;
+  --bg-glass: rgba(250, 250, 250, 0.72);
+  --text-color: #1D1D1F;
+  --text-muted: #86868B;
+  
+  --border-color: rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(0, 0, 0, 0.04);
+  --input-border: transparent;
+  --input-focus-ring: rgba(255, 149, 0, 0.3);
+  
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-lg: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.05); /* Inner border via shadow */
+    
+  --footer-bg: transparent;
+  --footer-text: #86868B;
+  
+  --error-color: #FF3B30;
+  --success-bg: rgba(52, 199, 89, 0.1);
+  --success-text: #34C759;
+  --error-bg: rgba(255, 59, 48, 0.1);
+  --error-text: #FF3B30;
+
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -312,118 +384,160 @@ onMounted(() => {
   flex-direction: column;
   align-items: flex-end;
   gap: 16px;
-  pointer-events: none; /* Let clicks pass through container area */
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Dark Mode Overrides */
+.feedback-widget-container.dark {
+  --primary-color: #FF9F0A;
+  --primary-gradient: linear-gradient(135deg, #FF9F0A, #FFB340);
+  --accent-glow: radial-gradient(circle at top right, rgba(255, 159, 10, 0.2), transparent 70%);
+  
+  --bg-color: #000000;
+  --bg-glass: rgba(30, 30, 30, 0.72);
+  --text-color: #F5F5F7;
+  --text-muted: #86868B;
+  
+  --border-color: rgba(255, 255, 255, 0.12);
+  --input-bg: rgba(255, 255, 255, 0.08);
+  --input-border: transparent;
+  --input-focus-ring: rgba(255, 159, 10, 0.3);
+  
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --shadow-lg: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.12); /* Inner border via shadow */
+    
+  --footer-bg: transparent;
+  --footer-text: #86868B;
+  
+  --success-bg: rgba(48, 209, 88, 0.15);
+  --success-text: #30D158;
+  --error-bg: rgba(255, 69, 58, 0.15);
+  --error-text: #FF453A;
 }
 
 .feedback-widget-container > * {
-  pointer-events: auto; /* Re-enable clicks on children */
+  pointer-events: auto;
 }
 
 /* Modal */
 .feedback-popup {
-  width: 384px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 360px;
+  background-color: var(--bg-glass);
+  background-image: var(--accent-glow);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.05); /* ring-slate-900/5 */
   transform-origin: bottom right;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Apple-like spring */
 }
 
 /* Animations */
 .swing-in-bottom-fwd {
-	animation: swing-in-bottom-fwd 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  animation: slide-up-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes swing-in-bottom-fwd {
-  0% { transform: rotateX(100deg); transform-origin: bottom; opacity: 0; }
-  100% { transform: rotateX(0); transform-origin: bottom; opacity: 1; }
+@keyframes slide-up-fade {
+  0% { transform: translateY(20px) scale(0.95); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 /* Header */
 .popup-header {
   position: relative;
-  background: linear-gradient(135deg, #fb923c, #f43f5e, #db2777);
-  padding: 24px;
-  color: white;
-  overflow: hidden;
+  background: transparent; /* Removed solid gradient */
+  padding: 24px 24px 12px 24px;
+  color: var(--text-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 .header-content {
   position: relative;
   z-index: 10;
 }
 .header-content h3 {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  letter-spacing: 0.025em;
+  letter-spacing: -0.01em;
   margin: 0;
+  color: var(--text-color);
 }
 .header-content p {
   margin-top: 4px;
-  font-size: 0.875rem;
-  opacity: 0.9;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
   margin-bottom: 0;
 }
-.circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(24px);
+.theme-toggle {
+  position: relative;
+  z-index: 20;
+  background: var(--input-bg);
+  border: none;
+  border-radius: 50%; /* Circle button */
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
 }
-.circle-1 {
-  background-color: rgba(253, 224, 71, 0.3);
-  width: 96px;
-  height: 96px;
-  top: -24px;
-  right: -24px;
+.theme-toggle:hover {
+  background: rgba(128, 128, 128, 0.15);
+  color: var(--text-color);
+  transform: scale(1.05);
 }
-.circle-2 {
-  background-color: rgba(255, 255, 255, 0.2);
-  width: 96px;
-  height: 96px;
-  bottom: -24px;
-  left: -24px;
-}
+/* Removed decorative circles as they clash with clean glass style */
+.circle { display: none; }
 
 /* Body */
 .popup-body {
-  padding: 24px;
+  padding: 12px 24px 24px 24px;
 }
 .form-group {
   margin-bottom: 20px;
 }
 .form-group label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: #334155;
-  margin-bottom: 6px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  margin-left: 4px; /* Align with input rounded corners */
 }
 .required {
-  color: #f43f5e;
+  color: var(--primary-color);
 }
 
 .input-control {
   width: 100%;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background-color: #f8fafc;
-  padding: 12px 16px;
-  font-size: 0.875rem;
-  color: #0f172a;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background-color: var(--input-bg);
+  padding: 14px 16px;
+  font-size: 0.9375rem;
+  color: var(--text-color);
   transition: all 0.2s;
   box-sizing: border-box;
 }
 .input-control::placeholder {
-  color: #94a3b8;
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 .input-control:focus {
-  background-color: white;
-  border-color: #f43f5e;
+  background-color: var(--bg-color);
   outline: none;
-  box-shadow: 0 0 0 1px #f43f5e;
+  box-shadow: 0 0 0 2px var(--input-focus-ring);
 }
 .textarea {
   resize: none;
+  min-height: 120px;
 }
 .input-wrapper {
   position: relative;
@@ -439,35 +553,32 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding-left: 14px;
-  color: #94a3b8;
+  color: var(--text-muted);
   pointer-events: none;
+  transition: color 0.3s;
+}
+.input-control:focus + .input-icon {
+  color: var(--primary-color);
 }
 .error-text {
-  color: #f43f5e;
+  color: var(--error-color);
   font-size: 0.75rem;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-weight: 500;
+  margin-left: 4px;
 }
 
 /* Status Message */
 .status-message {
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 16px;
+  padding: 12px 16px;
   font-size: 0.875rem;
   margin-bottom: 20px;
-}
-.status-success {
-  background-color: #f0fdf4;
-  color: #15803d;
-}
-.status-error {
-  background-color: #fef2f2;
-  color: #b91c1c;
-}
-.status-content {
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 8px;
 }
+/* ... rest matches ... */
 
 /* Button */
 .submit-button {
@@ -478,60 +589,57 @@ onMounted(() => {
   justify-content: center;
   gap: 8px;
   overflow: hidden;
-  border-radius: 12px;
-  background: linear-gradient(to right, #f97316, #e11d48);
-  padding: 12px 16px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: white;
+  border-radius: 100px; /* Pill shape */
+  background: var(--text-color); /* Contrast button */
+  padding: 14px 16px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--bg-color); /* Inverted text */
   border: none;
   cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.25);
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feedback-widget-container.dark .submit-button {
+    background: var(--primary-color); /* In dark mode, use primary color for button visibility */
+    color: #000;
 }
 .submit-button:hover {
-  box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.4);
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+.submit-button:active {
+  transform: scale(0.98);
 }
 .submit-button:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
-  box-shadow: none;
+  opacity: 0.3;
+  transform: none;
 }
 .button-hover-effect {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(255, 255, 255, 0.2);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.submit-button:hover .button-hover-effect {
-  opacity: 1;
+  display: none; /* Removed complex effect for cleaner look */
 }
 
 .spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid white;
-  border-top-color: transparent;
+  border: 2px solid rgba(128, 128, 128, 0.3);
+  border-top-color: currentColor;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  animation: spin 0.8s linear infinite;
 }
 
 /* Footer */
 .popup-footer {
-  border-top: 1px solid #f1f5f9;
-  padding: 12px;
+  border-top: none;
+  padding: 8px 12px 16px;
   text-align: center;
-  background-color: rgba(248, 250, 252, 0.5);
+  background-color: transparent;
 }
 .popup-footer p {
   font-size: 10px;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 500;
-  margin: 0;
+  opacity: 0.6;
 }
 
 /* Trigger Button */
@@ -539,34 +647,39 @@ onMounted(() => {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fb923c, #e11d48);
-  color: white;
-  border: none;
+  background: var(--bg-glass);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  color: var(--text-color);
+  border: 1px solid rgba(128, 128, 128, 0.1);
   cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.3);
-  transition: all 0.3s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .trigger-button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(225, 29, 72, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.16);
+  background: var(--bg-color);
 }
 .trigger-button:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
 }
 .icon-wrapper {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 24px;
+  height: 24px;
 }
 .icon {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: all 0.3s;
+  width: 24px;
+  height: 24px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .combined-enter-active,
 .combined-leave-active {
@@ -575,16 +688,15 @@ onMounted(() => {
 
 .icon.visible {
   opacity: 1;
-  transform: translate(-50%, -50%) rotate(0);
+  transform: translate(-50%, -50%) rotate(0) scale(1);
 }
 .icon.hidden {
   opacity: 0;
-  transform: translate(-50%, -50%) rotate(90deg);
+  transform: translate(-50%, -50%) rotate(90deg) scale(0.5);
 }
 /* Specific tweaks */
 .icon-close.hidden {
-  transform: translate(-50%, -50%) rotate(-90deg);
+  transform: translate(-50%, -50%) rotate(-90deg) scale(0.5);
 }
 
 </style>
-
