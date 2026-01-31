@@ -14,7 +14,7 @@ public class FeedbackProperties {
      * 外部配置文件路径，支持通过环境变量 FEEDBACK_CONFIG_PATH 或 feedback.config-path 覆盖
      * 默认指向工作目录下的 data/feedback_config.json，便于容器挂载
      */
-    private String configPath = "./data/feedback_config.json";
+    private String configPath ;
 
     /**
      * 将另一个配置实例的值复制到当前对象，用于启动时加载外部 JSON 覆盖 application.yml

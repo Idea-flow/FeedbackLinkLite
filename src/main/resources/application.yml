@@ -7,19 +7,5 @@ spring:
   threads:
     virtual:
       enabled: true
-
-feedback:
-  enabled: true
-  dingTalk:
-    webhook: ""
-    secret: ""
-  rate-limit:
-    enabled: true
-    max-requests: 5
-    window-minutes: 60
-  auth:
-    username: "admin"
-    password: "admin"
-    token: "token123434kkgdka56"
-  # 外部配置文件路径，默认指向工作目录下 data/feedback_config.json，可通过 FEEDBACK_CONFIG_PATH 或 feedback.config-path 覆盖
-  config-path: "./data/feedback_config.json"
+  profiles:
+    active: prod

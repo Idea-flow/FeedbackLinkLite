@@ -48,7 +48,8 @@ public class ServiceLinkLiteApplication {
             String logDirProperty = System.getProperty("LOG_DIR");
             String logDir = logDirProperty != null ? logDirProperty : System.getenv("LOG_DIR");
             if (logDir == null) {
-                logDir = "./data/logs";
+//                logDir = "./data/logs";
+                logDir = "/app/data/logs";
             }
 
             Path logPath = Paths.get(logDir).toAbsolutePath().normalize();
