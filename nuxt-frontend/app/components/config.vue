@@ -11,10 +11,17 @@ interface RateLimitConfig {
   maxRequests: number
 }
 
+interface AuthConfig {
+  username?: string
+  password?: string
+  token?: string
+}
+
 interface FeedbackConfig {
   enabled: boolean
   dingTalk: DingTalkConfig
   rateLimit: RateLimitConfig
+  auth?: AuthConfig
 }
 
 const runtimeConfig = useRuntimeConfig()
@@ -71,12 +78,14 @@ const showToast = (message: string) => {
 const form = reactive<FeedbackConfig>({
   enabled: true,
   dingTalk: { webhook: '', secret: '' },
-  rateLimit: { enabled: true, maxRequests: 10 }
+  rateLimit: { enabled: true, maxRequests: 10 },
+  auth: { username: '', password: '', token: '' }
 })
 const original = reactive<FeedbackConfig>({
   enabled: true,
   dingTalk: { webhook: '', secret: '' },
-  rateLimit: { enabled: true, maxRequests: 10 }
+  rateLimit: { enabled: true, maxRequests: 10 },
+  auth: { username: '', password: '', token: '' }
 })
 
 const isDirty = computed(() => JSON.stringify(form) !== JSON.stringify(original))
@@ -90,6 +99,20 @@ const validate = () => {
   if (form.rateLimit.maxRequests <= 0) {
     error.value = '频控阈值需为正整数'
     return false
+  }
+  if (form.auth) {
+    if (!form.auth.username?.trim()) {
+        error.value = '用户名不能为空'
+        return false
+    }
+    if (!form.auth.password?.trim()) {
+        error.value = '密码不能为空'
+        return false
+    }
+    if (!form.auth.token?.trim()) {
+        error.value = 'Token 不能为空'
+        return false
+    }
   }
   return true
 }
@@ -283,6 +306,44 @@ onMounted(() => {
                   />
                   <span class="text-xs text-slate-500">只读，不可修改</span>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 账户安全设置 -->
+          <div v-if="form.auth" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-lg font-semibold text-slate-900">账户安全</p>
+                <p class="text-sm text-slate-600">修改登录后台的用户名、密码及鉴权 Token</p>
+              </div>
+              <span class="rounded-full border border-yellow-100 bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-700">修改后需重新登录</span>
+            </div>
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-800">用户名 *</label>
+                    <input
+                        v-model="form.auth.username"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                    />
+                  </div>
+                  <div class="space-y-1">
+                    <label class="text-sm font-medium text-slate-800">密码 *</label>
+                    <input
+                        v-model="form.auth.password"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                    />
+                  </div>
+              </div>
+              <div class="space-y-1">
+                <label class="text-sm font-medium text-slate-800">鉴权 Token *</label>
+                <input
+                    v-model="form.auth.token"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200 transition-colors"
+                />
+                <p class="text-xs text-slate-500">修改 Token 会导致当前会话失效，下次请求需要重新登录。</p>
               </div>
             </div>
           </div>

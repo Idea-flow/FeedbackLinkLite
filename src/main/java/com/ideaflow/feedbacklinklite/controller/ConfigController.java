@@ -27,6 +27,14 @@ public class ConfigController {
         feedbackProperties.getDingTalk().setSecret(updated.getDingTalk().getSecret());
         feedbackProperties.getRateLimit().setEnabled(updated.getRateLimit().isEnabled());
         feedbackProperties.getRateLimit().setMaxRequests(updated.getRateLimit().getMaxRequests());
+
+        // Update Authentication settings
+        if (updated.getAuth() != null) {
+            feedbackProperties.getAuth().setUsername(updated.getAuth().getUsername());
+            feedbackProperties.getAuth().setPassword(updated.getAuth().getPassword());
+            feedbackProperties.getAuth().setToken(updated.getAuth().getToken());
+        }
+
         // windowMinutes is not configurable via API
         return ResponseEntity.ok(true);
     }

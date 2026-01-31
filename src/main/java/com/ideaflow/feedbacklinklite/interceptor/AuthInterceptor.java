@@ -30,6 +30,11 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+        // 放行 OPTIONS 请求 (CORS 预检)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // 获取所有 Cookie
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -53,4 +58,3 @@ public class AuthInterceptor implements HandlerInterceptor {
         return false;
     }
 }
-
