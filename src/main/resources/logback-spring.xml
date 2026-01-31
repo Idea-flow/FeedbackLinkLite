@@ -21,7 +21,7 @@
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
             <onMatch>ACCEPT</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
+            <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 
@@ -40,7 +40,7 @@
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>WARN</level>
             <onMatch>ACCEPT</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
+            <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 
@@ -59,7 +59,7 @@
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
+            <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 
@@ -71,10 +71,9 @@
     </appender>
 
     <root level="INFO">
-<!--        <appender-ref ref="STDOUT" />-->
+        <appender-ref ref="STDOUT" />
         <appender-ref ref="INFO_FILE" />
         <appender-ref ref="WARN_FILE" />
         <appender-ref ref="ERROR_FILE" />
     </root>
 </configuration>
-
