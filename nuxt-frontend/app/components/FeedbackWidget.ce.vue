@@ -47,12 +47,31 @@ const props = defineProps({
 
 const apiBaseUrl = computed(() => {
   if (props.apiBase) return props.apiBase
-  const windowBase = typeof window !== 'undefined' ? (window as any).__SL_API_BASE__ : ''
-  // Default to relative path /api if same domain, or empty logic
-  return (windowBase).replace(/\/$/, '')
+  const windowBase = typeof window !== 'undefined' ? (window as any).__SL_API_BASE__ || '' : ''
+  
+  // 如果windowBase有值则使用它，否则使用当前页面的协议+主机名作为基础地址
+  if (windowBase) {
+    return windowBase.replace(/\/$/, '')
+  }
+  
+  // 默认使用当前页面的协议和主机名作为API基础地址
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.host}`
+  }
+  
+  return ''
 })
 
-const withBase = (path: string) => `${apiBaseUrl.value}${path}`
+const withBase = (path: string) => {
+  if (apiBaseUrl.value) {
+    // 确保基础URL以/结尾，且路径不以/开头（避免重复斜杠）
+    const basePath = apiBaseUrl.value.endsWith('/') ? apiBaseUrl.value.slice(0, -1) : apiBaseUrl.value
+    const cleanPath = path.startsWith('/') ? path : `/${path}`
+    return `${basePath}${cleanPath}`
+  }
+  // 如果没有基础URL，直接返回路径（允许相对路径）
+  return path
+}
 
 
 const isOpen = ref(false)
