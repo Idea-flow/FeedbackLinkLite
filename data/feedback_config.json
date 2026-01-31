@@ -1,7 +1,7 @@
 {
   "enabled" : true,
   "dingTalk" : {
-    "webhook" : "",
+    "webhook" : "12",
     "secret" : ""
   },
   "rateLimit" : {
