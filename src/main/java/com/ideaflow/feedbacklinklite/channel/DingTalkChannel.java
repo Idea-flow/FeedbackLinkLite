@@ -46,7 +46,7 @@ public class DingTalkChannel implements MessageChannel {
                 content.append("- **页面**: ").append(escapeMarkdownContent(context.getPageUrl())).append("\n");
             }
             if (StringUtils.hasText(context.getContact())) {
-                content.append("- **联系**: ").append(maskContact(context.getContact())).append("\n");
+                content.append("- **联系**: ").append(context.getContact()).append("\n");
             }
             content.append("\n**内容**:\n> ").append(escapeMarkdownContent(context.getMessage()));
 

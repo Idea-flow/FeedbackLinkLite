@@ -312,7 +312,7 @@ onUnmounted(() => {
 
       <!-- Footer info -->
       <div class="popup-footer">
-           <p>Powered by ServiceLinkLite</p>
+           <p>Powered by FeedbackLinkLite</p>
       </div>
     </div>
 
