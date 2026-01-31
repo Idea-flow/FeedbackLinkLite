@@ -10,6 +10,37 @@ public class FeedbackProperties {
     private DingTalk dingTalk = new DingTalk();
     private RateLimit rateLimit = new RateLimit();
     private Auth auth = new Auth();
+    /**
+     * 外部配置文件路径，支持通过环境变量 FEEDBACK_CONFIG_PATH 或 feedback.config-path 覆盖
+     * 默认指向工作目录下的 data/feedback_config.json，便于容器挂载
+     */
+    private String configPath = "./data/feedback_config.json";
+
+    /**
+     * 将另一个配置实例的值复制到当前对象，用于启动时加载外部 JSON 覆盖 application.yml
+     */
+    public void copyFrom(FeedbackProperties source) {
+        if (source == null) {
+            return;
+        }
+        this.enabled = source.isEnabled();
+        if (source.getDingTalk() != null) {
+            this.dingTalk.setWebhook(source.getDingTalk().getWebhook());
+            this.dingTalk.setSecret(source.getDingTalk().getSecret());
+        }
+        if (source.getRateLimit() != null) {
+            this.rateLimit.setEnabled(source.getRateLimit().isEnabled());
+            this.rateLimit.setMaxRequests(source.getRateLimit().getMaxRequests());
+            this.rateLimit.setWindowMinutes(source.getRateLimit().getWindowMinutes());
+        }
+        if (source.getAuth() != null) {
+            this.auth.setUsername(source.getAuth().getUsername());
+            this.auth.setPassword(source.getAuth().getPassword());
+            this.auth.setToken(source.getAuth().getToken());
+        }
+        // 同步外部配置路径，保证后续保存使用同一路径
+        this.configPath = source.getConfigPath();
+    }
 
     @Data
     public static class DingTalk {

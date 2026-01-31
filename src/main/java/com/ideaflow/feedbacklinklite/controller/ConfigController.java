@@ -1,7 +1,9 @@
 package com.ideaflow.feedbacklinklite.controller;
 
+import com.ideaflow.feedbacklinklite.config.FeedbackConfigStorage;
 import com.ideaflow.feedbacklinklite.config.FeedbackProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,13 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/config")
 @RequiredArgsConstructor
+@Slf4j
 public class ConfigController {
     private final FeedbackProperties feedbackProperties;
+    private final FeedbackConfigStorage feedbackConfigStorage;
 
     @GetMapping
     public FeedbackProperties getConfig() {
         return feedbackProperties;
     }
+
     @PostMapping
     public ResponseEntity<Boolean> update(@RequestBody FeedbackProperties updated) {
         // For simplicity first version: overwrite in-memory properties
@@ -36,7 +41,12 @@ public class ConfigController {
         }
 
         // windowMinutes is not configurable via API
-        return ResponseEntity.ok(true);
+        try {
+            feedbackConfigStorage.save(feedbackProperties);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            log.error("保存外部配置失败", e);
+            return ResponseEntity.internalServerError().body(false);
+        }
     }
 }
-
