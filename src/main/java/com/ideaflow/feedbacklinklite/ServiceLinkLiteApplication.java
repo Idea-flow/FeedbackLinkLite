@@ -20,8 +20,6 @@ import java.nio.file.Paths;
 public class ServiceLinkLiteApplication {
 
     public static void main(String[] args) throws UnknownHostException {
-        // 在 Spring Boot 启动之前确保日志和配置目录存在
-        ensureDirectoriesExist();
         
         ConfigurableApplicationContext application = SpringApplication.run(ServiceLinkLiteApplication.class, args);
 
@@ -37,37 +35,5 @@ public class ServiceLinkLiteApplication {
                 "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
                 "Knife4j-ui: \thttp://" + ip + ":" + port + path + "/doc.html\n\t" +
                 "----------------------------------------------------------");
-    }
-    
-    /**
-     * 确保日志和配置目录存在
-     */
-    private static void ensureDirectoriesExist() {
-        try {
-            // 确保日志目录存在
-            String logDirProperty = System.getProperty("LOG_DIR");
-            String logDir = logDirProperty != null ? logDirProperty : System.getenv("LOG_DIR");
-            if (logDir == null) {
-//                logDir = "./data/logs";
-                logDir = "/app/data/logs";
-            }
-
-            Path logPath = Paths.get(logDir).toAbsolutePath().normalize();
-            Files.createDirectories(logPath);
-
-            System.out.println("Log directory ensured: " + logPath.toString());
-
-            // 确保配置目录也存在
-            String configPathStr = System.getProperty("FEEDBACK_CONFIG_PATH");
-            String defaultConfigPath = configPathStr != null ? configPathStr : "./data/feedback_config.json";
-            Path configPath = Paths.get(defaultConfigPath).getParent();
-            if (configPath != null) {
-                Files.createDirectories(configPath);
-                System.out.println("Config directory ensured: " + configPath.toString());
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to create log/config directories: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 }

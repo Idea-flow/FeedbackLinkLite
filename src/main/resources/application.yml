@@ -8,4 +8,4 @@ spring:
     virtual:
       enabled: true
   profiles:
-    active: prod
+    active: local
